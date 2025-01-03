@@ -1,23 +1,22 @@
 import os
 import hashlib
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Habilita CORS para todas las rutas
 
 # Base de datos simulada (en memoria)
 users = {}
 
-# Generar hash SHA256
 def generate_sha256(username, password):
     data = f"{username}:{password}".encode('utf-8')
     return hashlib.sha256(data).hexdigest()
 
-# Ruta principal
 @app.route('/', methods=['GET'])
 def home():
     return jsonify({"message": "Hola :)"})
 
-# Ruta de registro
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
@@ -35,7 +34,6 @@ def register():
 
     return jsonify({"message": "Usuario registrado con éxito", "token": token}), 201
 
-# Ruta de inicio de sesión
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
@@ -51,5 +49,5 @@ def login():
     return jsonify({"message": "Inicio de sesión exitoso", "token": users[username]['token']}), 200
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # Configura el puerto para Render
+    port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
